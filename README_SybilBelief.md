@@ -14,6 +14,7 @@ For any question, please contact Neil Zhenqiang Gong (neilgong@iastate.edu), Le 
 
 -graphfile GRAPHFILE
 GRAPHFILE stores the edges and weights of an undirected social graph. The format of GRAPHFILE is as follows
+
 0 1 0.8
 0 2 0.6
 ... 
@@ -28,7 +29,9 @@ Note that each edge in the GRAPHFILE appears twice, e.g., 0 1 0.8 and 1 0 0.8, a
 
 
 -priorfile PRIORFILE
+
 PRIORFILE stores the prior probabilities of all nodes of being benign. The format of PRIORFILE is as follows
+
 0 0.9
 1 0.5
 2 0.1
@@ -36,6 +39,7 @@ PRIORFILE stores the prior probabilities of all nodes of being benign. The forma
 ...  
 
 It means that node 0 has a prior probability 0.9 of being benign; node 2 has a prior probability 0.1 of being benign (or to say, prior probability 0.9 of being Sybil), etc. 
+
 Note that these prior probabilities can be user-defined for labeled benign nodes or/and labled Sybil nodes or/and unlabeled nodes. Or, they can be also learnt via a machine learning classifier. For example, we can extract local node features to train a binary classifier, which produces the probability of being benign for each node. Then, such probabilities can be treated as nodes' priors.
 
 
