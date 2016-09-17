@@ -13,21 +13,13 @@ For any question, please contact Neil Zhenqiang Gong (neilgong@iastate.edu), Le 
 ######### INPUT #########
 
 -graphfile GRAPHFILE
-
 GRAPHFILE stores the edges and weights of an undirected social graph. The format of GRAPHFILE is as follows
-
 0 1 0.8
-
 0 2 0.6
-
 ... 
-
 1 0 0.8
-
 ...
-
 2 0 0.6
-
 ...
 
 It means that node 0 and node 1 are connected with edge weight 0.8, etc.
@@ -36,7 +28,6 @@ Note that each edge in the GRAPHFILE appears twice, e.g., 0 1 0.8 and 1 0 0.8, a
 
 
 -priorfile PRIORFILE
-
 PRIORFILE stores the prior probabilities of all nodes of being benign. The format of PRIORFILE is as follows
 0 0.9
 1 0.5
