@@ -18,11 +18,15 @@ GRAPHFILE stores the edges and weights of an undirected social graph. The format
 0 1 0.8
 
 0 2 0.6
+
 ... 
 
 1 0 0.8
+
 ...
+
 2 0 0.6
+
 ...
 
 It means that node 0 and node 1 are connected with edge weight 0.8, etc.
@@ -41,6 +45,7 @@ PRIORFILE stores the prior probabilities of all nodes of being benign. The forma
 2 0.1
 
 3 0.8
+
 ...  
 
 It means that node 0 has a prior probability 0.9 of being benign; node 2 has a prior probability 0.1 of being benign (or to say, prior probability 0.9 of being Sybil), etc. 
@@ -105,6 +110,7 @@ PRIORFILE stores the final posterior probabilities of all nodes after running Sy
 1 0.8
 
 2 0.1
+
 ...  
 
 It means that node 0 has a posterior probability 1.0 of being benign; node 1 has a posterior probability 0.8 of being benign; node 2 has a posterior probability 0.1 of being benign (or to say, probability 0.9 of being Sybil), etc.
