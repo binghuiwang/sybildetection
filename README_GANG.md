@@ -36,6 +36,7 @@ It means that node 0 and node 1 are connected with edge weight 0.8, etc. Note th
 PRIORFILE stores the prior probabilities of all nodes of being benign. 
 
 The format of PRIORFILE is as follows 
+
 0 0.9 
 
 1 0.5 
@@ -53,6 +54,7 @@ It means that node 0 has a prior probability 0.9 of being benign; node 2 has a p
 TRAINFILE consists of two lines, where the first line includes a set of labeled benign nodes, separated by space; and the second line includes a set of Sybil nodes. 
 
 The format of TRAINFILE is as follows 
+
 1 2 4 6 7 8 9 10 ... 
 
 0 3 5 ... 
@@ -94,6 +96,7 @@ Otherwise, if it is unweighted, then the parameter -wei WEIGHT can be used to se
 PRIORFILE stores the final posterior probabilities of all nodes after running SybilBelief. 
 
 The format of POSTFILE is as follows 
+
 0 1.0 
 
 1 0.8 
