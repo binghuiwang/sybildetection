@@ -1,10 +1,10 @@
 ######### Terms of use #########
 
-The code is provided for research purposes only and without any warranty. Any commercial use is prohibited. The code implements the SybilSCAR algorithm. When using it in your research work, you should cite the following paper:
+The code is provided for research purposes only and without any warranty. Any commercial use is prohibited. The code implements the GANG algorithm. When using it in your research work, you should cite the following paper:
 
 Binghui Wang, Neil Zhenqiang Gong, and Hao Fu, “GANG: Detecting Fraudulent Users in Online Social Networks via Guilt-by-Association on Directed Graphs”, IEEE International Conference on Data Mining (ICDM), 2017.
 
-For any question, please contact Binghui Wang (binghuiw@iastate.com).
+For any question, please contact Binghui Wang (binghuiw@iastate.edu).
 
 ################################
 
@@ -12,7 +12,20 @@ For any question, please contact Binghui Wang (binghuiw@iastate.com).
 
 -graphfile GRAPHFILE 
 GRAPHFILE stores the edges and weights of a directed social graph. Basically, you need to have a file to store the bidirectional graph and a file to store the outgoing graph generated from your directed social graph, and name them as XX_bidreciontal.txt and XX_outgoing.txt, respectively. 
-The format of GRAPHFILE is as follows 0 1 0.8 0 2 0.6 ... 1 0 0.8 ... 2 0 0.6 ... It means that node 0 and node 1 are connected with edge weight 0.8, etc. Note that each edge in the GRAPHFILE appears twice, e.g., 0 1 0.8 and 1 0 0.8, and nodes are consecutive integers starting from 0.
+The format of GRAPHFILE is as follows
+0 1 0.8 
+
+0 2 0.6 
+
+... 
+
+1 0 0.8 
+
+... 
+
+2 0 0.6 
+
+... It means that node 0 and node 1 are connected with edge weight 0.8, etc. Note that each edge in the GRAPHFILE appears twice, e.g., 0 1 0.8 and 1 0 0.8, and nodes are consecutive integers starting from 0.
 
 -priorfile PRIORFILE 
 PRIORFILE stores the prior probabilities of all nodes of being benign. The format of PRIORFILE is as follows 0 0.9 1 0.5 2 0.1 3 0.8 ...
