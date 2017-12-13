@@ -11,11 +11,13 @@ For any question, please contact Binghui Wang (binghuiw@iastate.edu).
 ######### INPUT #########
 
 -graphfile GRAPHFILE 
+
 GRAPHFILE stores the edges and weights of a directed social graph. Basically, you need to have a file to store the bidirectional graph and a file to store the outgoing graph generated from your directed social graph, and name them as XX_bidreciontal.txt and XX_outgoing.txt, respectively. 
 The format of GRAPHFILE is as follows
 0 1 0.8 
 
-0 2 0.6 
+0 2 0.6
+
 ... 
 
 1 0 0.8 
@@ -24,9 +26,12 @@ The format of GRAPHFILE is as follows
 
 2 0 0.6 
 
-... It means that node 0 and node 1 are connected with edge weight 0.8, etc. Note that each edge in the GRAPHFILE appears twice, e.g., 0 1 0.8 and 1 0 0.8, and nodes are consecutive integers starting from 0.
+... 
+
+It means that node 0 and node 1 are connected with edge weight 0.8, etc. Note that each edge in the GRAPHFILE appears twice, e.g., 0 1 0.8 and 1 0 0.8, and nodes are consecutive integers starting from 0.
 
 -priorfile PRIORFILE 
+
 PRIORFILE stores the prior probabilities of all nodes of being benign. The format of PRIORFILE is as follows 0 0.9 1 0.5 2 0.1 3 0.8 ...
 It means that node 0 has a prior probability 0.9 of being benign; node 2 has a prior probability 0.1 of being benign (or to say, prior probability 0.9 of being Sybil), etc. Note that these prior probabilities can be user-defined for labeled benign nodes or/and labled Sybil nodes or/and unlabeled nodes. Or, they can be also learnt via a machine learning classifier. For example, we can extract local node features to train a binary classifier, which produces the probability of being benign for each node. Then, such probabilities can be treated as nodes' priors.
 
