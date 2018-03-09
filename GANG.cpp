@@ -326,7 +326,7 @@ public:
                 for(nei_iter = iter_node->second.begin(); nei_iter != iter_node->second.end(); nei_iter++){
 
                     if (pointer->post_pre[(*nei_iter).first] <= 0){
-                        pointer->post[node] += pointer->post_pre[(*nei_iter).first] * (*nei_iter).second;
+                        pointer->post[node] += 2 * pointer->post_pre[(*nei_iter).first] * (*nei_iter).second;
                     }
 
                 }
@@ -337,7 +337,7 @@ public:
                 for(nei_iter = iter_node->second.begin(); nei_iter != iter_node->second.end(); nei_iter++){
 
                     if (pointer->post_pre[(*nei_iter).first] >= 0){
-                        pointer->post[node] += pointer->post_pre[(*nei_iter).first] * (*nei_iter).second;
+                        pointer->post[node] += 2 * pointer->post_pre[(*nei_iter).first] * (*nei_iter).second;
                     }
                 }
             }
@@ -346,7 +346,7 @@ public:
             if(iter_node != pointer->network_map_doub.end()){
                 for(nei_iter = iter_node->second.begin(); nei_iter != iter_node->second.end(); nei_iter++){
 
-                    pointer->post[node] += pointer->post_pre[(*nei_iter).first] * (*nei_iter).second;
+                    pointer->post[node] += 2 * pointer->post_pre[(*nei_iter).first] * (*nei_iter).second;
     
                 }
             }
