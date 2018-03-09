@@ -222,7 +222,8 @@ public:
     }
     
 
-    /* Write final posteriors to the output file */
+    /* Write final posterior probabilities of nodes to the output file */
+    // The final posterior probability is changed from p (in the residual form) to p + 0.5.
     void write_posterior(){
         
         ofstream out(post_file, ofstream::out);
@@ -235,7 +236,7 @@ public:
         
     }
     
-
+    // Mainloop of SybilSCAR
     static void * lbp_thread(void *arg_pointer){
         
         Data * pointer = ((lbp_arg *)arg_pointer)->data_pointer;
@@ -277,7 +278,7 @@ public:
         
     }
      
-
+    // Multithread to speed up the calculation
     void lbp(){
     
         ordering_array = (int*) malloc(sizeof(int) * N);

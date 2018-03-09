@@ -136,26 +136,25 @@ public:
         
     }
     
+    // Read outgoing graph and bidirectional graph 
     void read_network(){
  
-    	
-        //outgoing directional map
-        //const char *addr;
-        char* network_type_out = "outgoing";
-    	
-        //    network_addr << network_file << network_type << ".txt";
-        //    addr = network_addr.str().c_str();
-     
-    	char* addr_out = (char*)malloc(strlen(network_file) * 4);
-
-    	string line;
+        string line;
         vertex node1,node2;
         vertex max_node = 0;
         double w;
         
-        
-        stringstream network_addr;
-    
+
+        //outgoing graph
+        char* network_type_out = "outgoing";
+    	
+        /* Certain platforms do not support this way of reading the filename*/
+        //  const char *addr_out;
+        //  stringstream network_addr;
+        //  network_addr << network_file << network_type_out << ".txt";
+        //  addr_out = network_addr.str().c_str();
+     
+    	char* addr_out = (char*)malloc(strlen(network_file) * 4);
     	strcpy(addr_out, network_file);
     	strcat(addr_out, network_type_out);
     	strcat(addr_out, ".txt");
@@ -187,13 +186,16 @@ public:
 
         in1.close();
         
-        // bidirectional map
+        // bidirectional grph
         char* network_type_bi = "bidirection";
-        //network_addr << network_file << network_type << ".txt";
-        //addr = network_addr.str().c_str();
+
+        /* Certain platforms do not support this way of reading the filename*/
+        //  const char *addr_bi;
+        //  stringstream network_addr;
+        //  network_addr << network_file << network_type << ".txt";
+        //  addr_bi = network_addr.str().c_str();
         
     	char* addr_bi = (char*)malloc(strlen(network_file) * 4);
-
     	strcpy(addr_bi, network_file);
     	strcat(addr_bi, network_type_bi);
     	strcat(addr_bi, ".txt");
@@ -238,8 +240,7 @@ public:
 
     }
 
-     // Note that initialization of prior has changed from 0.9, 0.5, 0.1 to 0.4, 0, -0.4; 
-    // Also, the posterior has also changed from p to p - 0.5.
+     // Note that initialization of prior is q, but it changes to q - 0.5 (in the residual form) to perform the calculation. 
     void read_prior(){
 
         //initialize priors as theta_unl
@@ -294,6 +295,7 @@ public:
        
     }
 
+    // Mainloop of GNAG
     static void * lbp_thread(void *arg_pointer){
 
         Data * pointer = ((lbp_arg *)arg_pointer)->data_pointer;
@@ -315,7 +317,9 @@ public:
         for (vertex index = start; index < end; index++) {
             
             node = pointer->ordering_array[index];
+
             pointer->post[node] += pointer->prior[node];
+
 
             iter_node = pointer->network_map_out.find(node);
             if(iter_node != pointer->network_map_out.end()){
@@ -355,13 +359,11 @@ public:
                 pointer->post[node] = -0.5;
             }
         }
-
     }
 
+    // Multithread to speed up the calculation
     void lbp(){
-        //use iterative method to propagate messages
-        //flooding method's performance is not as good as iterative method
-
+        
         ordering_array = (int*) malloc(sizeof(int) * (N) );
 
         //initialize posts
@@ -413,6 +415,8 @@ public:
         }
     }
 
+    /* Write final posterior probabilities of nodes to the output file */
+    // The final posterior probability is changed from p (in the residual form) to p + 0.5.
     void write_posterior(){
 
         ofstream out_post(post_file, ofstream::out);
@@ -441,7 +445,9 @@ public:
 
         //by default, weighted graph
         weighted_graph = 1;
-        weight = 0.51;
+
+        //depends on the average degree of the directed graph. 
+        weight = 0.51; 
 
         num_threads = 1;
 

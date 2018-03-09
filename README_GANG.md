@@ -10,11 +10,11 @@ For any question, please contact Binghui Wang (binghuiw@iastate.edu).
 
 ######### INPUT ##########
 
--graphfile GRAPHFILE 
+-graphfile GRAPHFILE_ 
 
-GRAPHFILE stores the edges and weights of a directed social graph. Basically, you need to have a file to store the bidirectional graph and a file to store the outgoing graph generated from your directed social graph, and name them as XX_bidreciontal.txt and XX_outgoing.txt, respectively. 
+GRAPHFILE stores the edges and weights of a directed social graph. Basically, you need to have a file named GRAPHFILE_bidreciontal.txt to store the bidirectional edges and a file named GRAPHFILE_outgoing.txt to store the outgoing edges generated from your directed social graph. 
 
-The format of GRAPHFILE is as follows
+The format of GRAPHFILE_bidreciontal.txt is as follows
 0 1 0.8 
 
 0 2 0.6
@@ -29,7 +29,10 @@ The format of GRAPHFILE is as follows
 
 ... 
 
-It means that node 0 and node 1 are connected with edge weight 0.8, etc. Note that each edge in the GRAPHFILE appears twice, e.g., 0 1 0.8 and 1 0 0.8, and nodes are consecutive integers starting from 0.
+It means that node 0 and node 1 are connected with edge weight 0.8, etc. Note that each edge in the GRAPHFILE_bidreciontal.txt appears twice, e.g., 0 1 0.8 and 1 0 0.8, and nodes are consecutive integers starting from 0.
+
+The format of GRAPHFILE_outgoing.txt is similar as that of GRAPHFILE_bidreciontal.txt, except that it does not store each edge twice. 
+
 
 -priorfile PRIORFILE 
 
@@ -83,9 +86,9 @@ NUM_THREADS is the number of threads. By default, NUM_THREADS=1.
 
 -wg WEIGHTED_GRAPH 
 
-WEIGHTED_GRAPH indicates whether the considered graph is weighted (WEIGHTED_GRAPH=1) or not (WEIGHTED_GRAPH=0). If the graph is weighted, then the weights of all edges can be user defined and are stored in the third column of the GRAPHFILE.
-
-Otherwise, if it is unweighted, then the parameter -wei WEIGHT can be used to set the SAME weight for all edges. By default, WEIGHTED_GRAPH=0 and WEIGHT=0.9.
+WEIGHTED_GRAPH indicates whether the considered graph is weighted (WEIGHTED_GRAPH=1) or unweighted (WEIGHTED_GRAPH=0). If the graph is weighted, then the weights of all edges can be user defined and are stored in the third column of the GRAPHFILE.
+Otherwise, the parameter -wei WEIGHT can be used to set a SAME weight for all edges. 
+By default, WEIGHTED_GRAPH=0 and WEIGHT=1/(2*average degree).
 
 ###########################
 
@@ -113,5 +116,19 @@ It means that node 0 has a posterior probability 1.0 of being benign; node 1 has
 
 Compile: g++ GANG.cpp -pthread -O3 -o GANG 
 
-Execute: ./GANG -graphfile GRAPHFILE -trainfile TRAINFILE -postfile POSTFILE [-priorfile PRIORFILE] [-nt NUM_THREADS] [-mIter MAXITER] [-tp THETA_POS] [-tn THETA_NEG] [-tu THETA_UNL] [-wg WEIGHTED_GRAPH] [-wei WEIGHT]
+Execute: ./GANG -graphfile GRAPHFILE_ -trainfile TRAINFILE -postfile POSTFILE [-priorfile PRIORFILE] [-nt NUM_THREADS] [-mIter MAXITER] [-tp THETA_POS] [-tn THETA_NEG] [-tu THETA_UNL] [-wg WEIGHTED_GRAPH] [-wei WEIGHT]
+
 ###########################
+
+
+######## REMARK ############
+
+MAXITER: It is an important parameter that largely affects the performance of GANG. Different datasets could have different MAXITERs. Usually, setting MAXITER=6 would produce a promising performance (in terms of AUC and top-interval ranking) in both synthetic graphs and real-world OSNs. 
+
+WEIGHT: It is also an important parameter. To guarantee the convergence of GANG, it can be empirically set as  WEIGHT = 1 / (2* average degree). To speed up the computation, its value can be set larger. Usually, WEIGHT=0.51 or WEIGHT=0.6 would be good choices.
+
+###########################
+
+
+
+

@@ -8,6 +8,7 @@ When using it in your research work, you should cite the following paper:
 Binghui Wang, Le Zhang, and Neil Zhenqiang Gong. "SybilSCAR: Sybil Detection in Online Social Networks via Local Rule based Propagation", in INFOCOM, 2017. 
 
 For any question, please contact Binghui Wang (binghuiw@iastate.com), Le Zhang (lezhang@iastate.edu), or Neil Zhenqiang Gong (neilgong@iastate.edu).
+
 ############################
 
 ######### INPUT #########
@@ -62,14 +63,12 @@ THETA_UNL sets the prior probability of unlabeled nodes. By default, THETA_UNL=0
 NUM_THREADS is the number of threads. By default, NUM_THREADS=1.
 
 -wg  WEIGHTED_GRAPH
-WEIGHTED_GRAPH indicates whether the considered graph is weighted (WEIGHTED_GRAPH=1) or not (WEIGHTED_GRAPH=0). 
+WEIGHTED_GRAPH indicates whether the considered graph is weighted (WEIGHTED_GRAPH=1) or unweighted (WEIGHTED_GRAPH=0). 
 If the graph is weighted, then the weights of all edges can be user defined and are stored in the third column of the GRAPHFILE. 
+Otherwise,the parameter -wei WEIGHT can be used to set a SAME weight for all edges. 
+By default, WEIGHTED_GRAPH=0 and WEIGHT=1/(2*average degree).
 
-Otherwise, if it is unweighted, then the parameter
--wei WEIGHT
-can be used to set the SAME weight for all edges. 
-By default, WEIGHTED_GRAPH=0 and WEIGHT=0.9. 
-
+############################
 
 ######### OUTPUT #########
 
@@ -80,13 +79,23 @@ PRIORFILE stores the final posterior probabilities of all nodes after running Sy
 2 0.1
 ...  
 It means that node 0 has a posterior probability 1.0 of being benign; node 1 has a posterior probability 0.8 of being benign; node 2 has a posterior probability 0.1 of being benign (or to say, probability 0.9 of being Sybil), etc.
+
 ###########################
 
 
 ######## USAGE #########
 
 Compile: g++ sybilscar.cpp -pthread -O3 -o sybilscar
+
 Execute: ./sybilscar -graphfile GRAPHFILE -trainfile TRAINFILE -postfile POSTFILE [-priorfile PRIORFILE] [-nt NUM_THREADS]
         [-mIter MAXITER] [-tp THETA_POS] [-tn THETA_NEG] [-tu THETA_UNL] [-wg WEIGHTED_GRAPH] [-wei WEIGHT]  
+
 ###########################
 
+######## REMARK ############
+
+MAXITER: It is an important parameter that largely affects the performance of SybilSCAR. Different datasets could have different MAXITERs. Usually, setting MAXITER=6 would produce a promising performance (in terms of AUC and top-interval ranking) in both synthetic graphs and real-world OSNs. 
+
+WEIGHT: It is also an important parameter. To guarantee the convergence of SybilSCAR, it can be empirically set as  WEIGHT = 1 / (2* average degree). To speed up the computation, its value can be set larger. Usually, WEIGHT=0.51 or WEIGHT=0.6 would be good choices.
+
+###########################
