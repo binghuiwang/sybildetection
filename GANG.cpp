@@ -51,7 +51,8 @@ public:
 
     //adjacency list
     //weighted graph
-    unordered_map<vertex,list<pair<vertex, double> > > network_map_out, network_map_in, network_map_doub;
+    unordered_map<vertex,set<pair<vertex, double> > > network_map_out, network_map_in, network_map_doub;
+
 
     //1 : weighted, 0: unweighted
     int weighted_graph;
@@ -102,9 +103,7 @@ public:
 
     }
     
-    // Outgoing or incoming graph
-    void add_edge1(vertex node1, vertex node2, double w){
-        // add edge (node1, node2)
+    void add_edge(vertex node1, vertex node2, double w){
 
         // no self loops
         if(node1==node2){
@@ -112,61 +111,34 @@ public:
         }
 
         //add node2 to the adjacency list of node1
+        set<pair<vertex, double> >::iterator iter;
         pair <vertex, double> nei (node2, w);
         
-        network_map_out[node1].push_back(nei);
-        network_map_in[node2].push_back(make_pair(node1, w));
-        
-        
-    }
-
-    // Bidirectional graph
-    void add_edge2(vertex node1, vertex node2, double w){
-        
-        // no self loops
-        if(node1==node2){
-            return;
+        iter = network_map_in[node1].find(nei);
+        if(iter != network_map_in[node1].end()){
+            network_map_doub[node1].insert(nei);
+            network_map_doub[node2].insert(make_pair(node1, w));
+            network_map_in[node1].erase(iter);
+            network_map_out[node2].erase(network_map_out[node2].find(make_pair(node1, w)));
+        }else{
+            network_map_out[node1].insert(nei);
+            network_map_in[node2].insert(make_pair(node1, w));
         }
-        
-        //add node2 to the adjacency list of node1
-        pair <vertex, double> nei (node2, w);
-
-        network_map_doub[node1].push_back(nei);
-        network_map_doub[node2].push_back(make_pair(node1, w));
-        
     }
-    
-    // Read outgoing graph and bidirectional graph 
+
     void read_network(){
- 
+
+        ifstream in(network_file,ifstream::in);
+        assert(in);
+
         string line;
-        vertex node1,node2;
-        vertex max_node = 0;
+        vertex node1,node2, max_node=0;
         double w;
-        
-
-        //outgoing graph
-        char* network_type_out = "outgoing";
-    	
-        /* Certain platforms do not support this way of reading the filename*/
-        //  const char *addr_out;
-        //  stringstream network_addr;
-        //  network_addr << network_file << network_type_out << ".txt";
-        //  addr_out = network_addr.str().c_str();
-     
-    	char* addr_out = (char*)malloc(strlen(network_file) * 4);
-    	strcpy(addr_out, network_file);
-    	strcat(addr_out, network_type_out);
-    	strcat(addr_out, ".txt");
-
-        ifstream in1(addr_out,ifstream::in);
-        assert(in1);
 
         //read edges
-        while(getline(in1,line) != NULL){
-
-            node1 = (vertex)atol(strtok((char *)line.c_str()," \n\t\r"));
-            node2 = (vertex)atol(strtok(NULL," \n\t\r"));
+        while(getline(in,line)!=NULL){
+            node1=(vertex)atol(strtok((char *)line.c_str()," \n\t\r"));
+            node2=(vertex)atol(strtok(NULL," \n\t\r"));
             if (weighted_graph == 1) {
                 w = (double)atof(strtok(NULL," \n\t\r")) - 0.5;
             }
@@ -174,7 +146,7 @@ public:
                 w = weight - 0.5;
             }
             
-            add_edge1(node1, node2, w);
+            add_edge(node1, node2, w);
             if(node1 > max_node){
                 max_node = node1;
             }
@@ -184,53 +156,9 @@ public:
             
         }
 
-        in1.close();
-        
-        // bidirectional grph
-        char* network_type_bi = "bidirection";
-
-        /* Certain platforms do not support this way of reading the filename*/
-        //  const char *addr_bi;
-        //  stringstream network_addr;
-        //  network_addr << network_file << network_type << ".txt";
-        //  addr_bi = network_addr.str().c_str();
-        
-    	char* addr_bi = (char*)malloc(strlen(network_file) * 4);
-    	strcpy(addr_bi, network_file);
-    	strcat(addr_bi, network_type_bi);
-    	strcat(addr_bi, ".txt");
-
-    	ifstream in2(addr_bi,ifstream::in);
-        assert(in2);
-        
-        //read edges
-        while(getline(in2,line) != NULL){
-
-            node1 = (vertex)atol(strtok((char *)line.c_str()," \n\t\r"));
-            node2 = (vertex)atol(strtok(NULL," \n\t\r"));
-            
-            if (weighted_graph == 1) {
-                w = (double)atof(strtok(NULL," \n\t\r")) - 0.5;
-            }
-            else{
-                w = weight - 0.5;
-            }
-            
-            add_edge2(node1, node2, w);
-            if(node1 > max_node){
-                max_node = node1;
-            }
-            if(node2 > max_node){
-                max_node = node2;
-            }
-            
-        }
-        
-        in2.close();
-        
-        //number of nodes in the graph
+        in.close();
         N = max_node + 1;
-
+        
         //allocate space for final scores
         post = (double*) malloc(sizeof(double)*(N));
         post_pre = (double*) malloc(sizeof(double)*(N));
@@ -240,7 +168,9 @@ public:
 
     }
 
-     // Note that initialization of prior is q, but it changes to q - 0.5 (in the residual form) to perform the calculation. 
+    
+
+    // Note that initialization of prior is q, but it changes to q - 0.5 (in the residual form) to perform the calculation. 
     void read_prior(){
 
         //initialize priors as theta_unl
@@ -250,6 +180,7 @@ public:
         }
         
         if (prior_file != "") {
+
             ifstream in(prior_file,ifstream::in);
             assert(in);
 
@@ -311,9 +242,10 @@ public:
 
         vertex node;
 
-        unordered_map<vertex,list<pair<vertex, double> > >::iterator iter_node;
-        list<pair<vertex, double> >::iterator nei_iter;
-       
+
+        unordered_map<vertex,set<pair<vertex, double> > >::iterator iter_node;
+        set<pair<vertex, double> >::iterator nei_iter;
+
         for (vertex index = start; index < end; index++) {
             
             node = pointer->ordering_array[index];
@@ -504,7 +436,6 @@ public:
 int main (int argc, char **argv)
 {
     clock_t start, end;
-    start = clock();
 
     srand ( time(NULL) );
     
@@ -520,9 +451,7 @@ int main (int argc, char **argv)
 
     data.write_posterior();
 
-    end = clock();
     
-    cout<<endl<<"Total time taken: "<<(double)(end-start)/CLOCKS_PER_SEC*1000<<" ms"<<endl;
 
     return 0;
 }

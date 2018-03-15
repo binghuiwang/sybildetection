@@ -1,9 +1,8 @@
 
 ######### Terms of use #########
 
-The code is provided for research purposes only and without any warranty. Any commercial use is prohibited.
-The code implements the SybilSCAR algorithm. 
-When using it in your research work, you should cite the following paper:
+The code is provided for research purposes only and without any warranty. The code implements the SybilSCAR algorithm. 
+When using it in your research work, please cite the following paper:
 
 Binghui Wang, Le Zhang, and Neil Zhenqiang Gong. "SybilSCAR: Sybil Detection in Online Social Networks via Local Rule based Propagation", in INFOCOM, 2017. 
 
@@ -63,9 +62,9 @@ THETA_UNL sets the prior probability of unlabeled nodes. By default, THETA_UNL=0
 NUM_THREADS is the number of threads. By default, NUM_THREADS=1.
 
 -wg  WEIGHTED_GRAPH
-WEIGHTED_GRAPH indicates whether the considered graph is weighted (WEIGHTED_GRAPH=1) or unweighted (WEIGHTED_GRAPH=0). 
+WEIGHTED_GRAPH indicates whether the considered graph is weighted (WEIGHTED_GRAPH=1) or not (WEIGHTED_GRAPH=0). 
 If the graph is weighted, then the weights of all edges can be user defined and are stored in the third column of the GRAPHFILE. 
-Otherwise,the parameter -wei WEIGHT can be used to set a SAME weight for all edges. 
+Otherwise, the parameter -wei WEIGHT can be used to set a SAME weight for all edges. 
 By default, WEIGHTED_GRAPH=0 and WEIGHT=1/(2*average degree).
 
 ############################
@@ -73,7 +72,7 @@ By default, WEIGHTED_GRAPH=0 and WEIGHT=1/(2*average degree).
 ######### OUTPUT #########
 
 -postfile POSTFILE
-PRIORFILE stores the final posterior probabilities of all nodes after running SybilBelief. The format of POSTFILE is as follows 
+PRIORFILE stores the final posterior probabilities of all nodes after running SybilSCAR. The format of POSTFILE is as follows 
 0 1.0
 1 0.8
 2 0.1
@@ -94,8 +93,14 @@ Execute: ./sybilscar -graphfile GRAPHFILE -trainfile TRAINFILE -postfile POSTFIL
 
 ######## REMARK ############
 
-MAXITER: It is an important parameter that largely affects the performance of SybilSCAR. Different datasets could have different MAXITERs. Usually, setting MAXITER=6 would produce a promising performance (in terms of AUC and top-interval ranking) in both synthetic graphs and real-world OSNs. 
+MAXITER: Different datasets could have different MAXITERs. Usually, setting MAXITER=6 would produce a promising performance (in terms of AUC and top-interval ranking) in both synthetic graphs and real-world OSNs that we have tested. 
 
-WEIGHT: It is also an important parameter. To guarantee the convergence of SybilSCAR, it can be empirically set as  WEIGHT = 1 / (2* average degree). To speed up the computation, its value can be set larger. Usually, WEIGHT=0.51 or WEIGHT=0.6 would be good choices.
+WEIGHT: To guarantee the convergence of SybilSCAR, it can be empirically set as  WEIGHT = 1 / (2* average degree). To speed up the computation, its value can be set larger, e.g., WEIGHT=0.51 or WEIGHT=0.6.
+
+TRAINFILE: SybilSCAR is also applicable when only labeled benign nodes or only labeled Sybils are available. In these cases, the posterior probabilities produced by SybilSCAR can be used to rank nodes. When only labeled benign nodes are available, the second line in the TRAINFILE should be an empty line. When only labeled Sybils are available, the first line in the TRAINFILE should be an empty line. 
+
+Prior and edge weight: The node priors and edge weights can be learnt through the following paper: 
+
+Peng Gao, Binghui Wang, Neil Zhenqiang Gong, Sanjeev R. Kulkarni, Kurt Thomas, Prateek Mittal. "SybilFuse: Combining Local Attributes with Global Structure to Perform Robust Sybil Detection". In IEEE Conference on Communications and Network Security (CNS), 2018.
 
 ###########################

@@ -1,8 +1,9 @@
 ######### Terms of use #########
 
-The code is provided for research purposes only and without any warranty. Any commercial use is prohibited. The code implements the GANG algorithm. When using it in your research work, you should cite the following paper:
+The code is provided for research purposes only and without any warranty. The code implements the GANG algorithm. 
+When using the code in your work, please cite the following paper:
 
-Binghui Wang, Neil Zhenqiang Gong, and Hao Fu, “GANG: Detecting Fraudulent Users in Online Social Networks via Guilt-by-Association on Directed Graphs”, IEEE International Conference on Data Mining (ICDM), 2017.
+Binghui Wang, Neil Zhenqiang Gong, and Hao Fu, “GANG: Detecting Fraudulent Users in Online Social Networks via Guilt-by-Association on Directed Graphs”. In IEEE International Conference on Data Mining (ICDM), 2017.
 
 For any question, please contact Binghui Wang (binghuiw@iastate.edu).
 
@@ -11,82 +12,59 @@ For any question, please contact Binghui Wang (binghuiw@iastate.edu).
 ######### INPUT ##########
 
 -graphfile GRAPHFILE_ 
-
-GRAPHFILE stores the edges and weights of a directed social graph. Basically, you need to have a file named GRAPHFILE_bidreciontal.txt to store the bidirectional edges and a file named GRAPHFILE_outgoing.txt to store the outgoing edges generated from your directed social graph. 
-
-The format of GRAPHFILE_bidreciontal.txt is as follows
+GRAPHFILE stores the edges and weights of a directed social graph. 
+The format of GRAPHFILE is as follows
 0 1 0.8 
-
 0 2 0.6
-
+0 3 0.9
 ... 
-
 1 0 0.8 
-
-... 
-
 2 0 0.6 
-
 ... 
 
-It means that node 0 and node 1 are connected with edge weight 0.8, etc. Note that each edge in the GRAPHFILE_bidreciontal.txt appears twice, e.g., 0 1 0.8 and 1 0 0.8, and nodes are consecutive integers starting from 0.
-
-The format of GRAPHFILE_outgoing.txt is similar as that of GRAPHFILE_bidreciontal.txt, except that it does not store each edge twice. 
+"0 1 0.8" means that node 1 is an outgoing neighbor of node 0 and the edge weight is 0.8; 
+"1 0 0.8" means that node 0 is an outgoing neighbor of node 1 and the edge weight is 0.8; 
+Similarly, node 3 is an outgoing neighbor of node 0 with edge weight 0.9. 
+Note that nodes are consecutive integers starting from 0.
 
 
 -priorfile PRIORFILE 
-
 PRIORFILE stores the prior probabilities of all nodes of being benign. 
-
 The format of PRIORFILE is as follows 
-
 0 0.9 
-
 1 0.5 
-
 2 0.1 
-
 3 0.8 
-
 ...
 
-It means that node 0 has a prior probability 0.9 of being benign; node 2 has a prior probability 0.1 of being benign (or to say, prior probability 0.9 of being Sybil), etc. Note that these prior probabilities can be user-defined for labeled benign nodes or/and labled Sybil nodes or/and unlabeled nodes. Or, they can be also learnt via a machine learning classifier. For example, we can extract local node features to train a binary classifier, which produces the probability of being benign for each node. Then, such probabilities can be treated as nodes' priors.
+It means that node 0 has a prior probability 0.9 of being benign; node 2 has a prior probability 0.1 of being benign (or to say, prior probability 0.9 of being Sybil), etc. 
+Note that these prior probabilities can be user-defined for labeled benign nodes or/and labled Sybil nodes or/and unlabeled nodes. Or, they can be also learnt via a machine learning classifier. For example, we can extract local node features to train a binary classifier, which produces the probability of being benign for each node. Then, such probabilities can be treated as nodes' priors.
 
 -trainfile TRAINFILE 
-
-TRAINFILE consists of two lines, where the first line includes a set of labeled benign nodes, separated by space; and the second line includes a set of Sybil nodes. 
-
-The format of TRAINFILE is as follows 
+TRAINFILE consists of two lines, where the first line includes a set of labeled benign nodes, separated by space; and the second line includes a set of Sybil nodes. The format of TRAINFILE is as follows 
 
 1 2 4 6 7 8 9 10 ... 
-
 0 3 5 ... 
-
 It means that "1 2 4 6 7 8 9 10 ..." are labeled benign nodes and "0 3 5 ..." are labeled Sybil nodes.
 
 -mIter MAXITER 
-
 MAXITER sets the number of maximum iterations. By default, MAXITER=5.
 
 -tp THETA_POS 
-
 THETA_POS sets the prior probability of being benign for labeled benign nodes. By default, THETA_POS=0.9.
 
 -tn THETA_NEG 
-
 THETA_NEG sets the prior probability of being benign for labeled Sybil nodes. By default, THETA_NEG=0.1.
 
 -tu THETA_UNL 
-
 THETA_UNL sets the prior probability of unlabeled nodes. By default, THETA_UNL=0.5.
 
 -nt NUM_THREADS 
-
 NUM_THREADS is the number of threads. By default, NUM_THREADS=1.
 
--wg WEIGHTED_GRAPH 
-
-WEIGHTED_GRAPH indicates whether the considered graph is weighted (WEIGHTED_GRAPH=1) or unweighted (WEIGHTED_GRAPH=0). If the graph is weighted, then the weights of all edges can be user defined and are stored in the third column of the GRAPHFILE.
+-wg  WEIGHTED_GRAPH
+WEIGHTED_GRAPH indicates whether the considered graph is weighted (WEIGHTED_GRAPH=1) or not (WEIGHTED_GRAPH=0). 
+If the graph is weighted, then the weights of all edges can be user defined and are stored in the third column of the GRAPHFILE. 
 Otherwise, the parameter -wei WEIGHT can be used to set a SAME weight for all edges. 
 By default, WEIGHTED_GRAPH=0 and WEIGHT=1/(2*average degree).
 
@@ -96,18 +74,13 @@ By default, WEIGHTED_GRAPH=0 and WEIGHT=1/(2*average degree).
 
 -postfile POSTFILE 
 
-PRIORFILE stores the final posterior probabilities of all nodes after running SybilBelief. 
+PRIORFILE stores the final posterior probabilities of all nodes after running GANG. 
 
 The format of POSTFILE is as follows 
-
 0 1.0 
-
 1 0.8 
-
 2 0.1 
-
 ...
-
 It means that node 0 has a posterior probability 1.0 of being benign; node 1 has a posterior probability 0.8 of being benign; node 2 has a posterior probability 0.1 of being benign (or to say, probability 0.9 of being Sybil), etc. 
 
 ###########################
@@ -116,16 +89,19 @@ It means that node 0 has a posterior probability 1.0 of being benign; node 1 has
 
 Compile: g++ GANG.cpp -pthread -O3 -o GANG 
 
-Execute: ./GANG -graphfile GRAPHFILE_ -trainfile TRAINFILE -postfile POSTFILE [-priorfile PRIORFILE] [-nt NUM_THREADS] [-mIter MAXITER] [-tp THETA_POS] [-tn THETA_NEG] [-tu THETA_UNL] [-wg WEIGHTED_GRAPH] [-wei WEIGHT]
+Execute: ./GANG -graphfile GRAPHFILE -trainfile TRAINFILE -postfile POSTFILE [-priorfile PRIORFILE] [-nt NUM_THREADS] [-mIter MAXITER] 
+			[-tp THETA_POS] [-tn THETA_NEG] [-tu THETA_UNL] [-wg WEIGHTED_GRAPH] [-wei WEIGHT]
 
 ###########################
 
 
 ######## REMARK ############
 
-MAXITER: It is an important parameter that largely affects the performance of GANG. Different datasets could have different MAXITERs. Usually, setting MAXITER=6 would produce a promising performance (in terms of AUC and top-interval ranking) in both synthetic graphs and real-world OSNs. 
+MAXITER: Different datasets could have different MAXITERs. Usually, setting MAXITER=6 would produce a promising performance (in terms of AUC and top-interval ranking) in both synthetic graphs and real-world OSNs we have tested. 
 
-WEIGHT: It is also an important parameter. To guarantee the convergence of GANG, it can be empirically set as  WEIGHT = 1 / (2* average degree). To speed up the computation, its value can be set larger. Usually, WEIGHT=0.51 or WEIGHT=0.6 would be good choices.
+WEIGHT: To guarantee the convergence of GANG, it can be empirically set as  WEIGHT = 1 / (2* average degree). To speed up the computation, its value can be set larger, e.g., WEIGHT=0.51 or WEIGHT=0.6.
+
+TRAINFILE: GANG is also applicable when only labeled benign nodes or only labeled Sybils are available. In these cases, the posterior probabilities produced by GANG can be used to rank nodes. When only labeled benign nodes are available, the second line in the TRAINFILE should be an empty line. When only labeled Sybils are available, the first line in the TRAINFILE should be an empty line. 
 
 ###########################
 

@@ -1,0 +1,14 @@
+
+###########################
+
+We provide example usage cases for SybilBelief, SybilSCAR, and GANG. 
+
+Please refer to Undirected_Facebook/Example.txt for example usage of SybilBelief and SybilSCAR. 
+
+Please refer to Directed_Pokec/Example.txt for example usage of GANG. 
+
+###########################
+
+
+
+

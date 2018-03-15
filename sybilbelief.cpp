@@ -1,11 +1,12 @@
+
 /*
- This code was written by Neil Zhenqiang Gong, in September, 2012, and modified by Le Zhang in September, 2015 and Binghui Wang in August, 2016. 
+ This code was written by Neil Zhenqiang Gong, in September 2012, and then modified by Le Zhang in September 2015 and Binghui Wang in August 2016. 
  
  It implements SybilBelief algorithm proposed in the following paper:
  Neil Zhenqiang Gong, Mario Frank, and Prateek Mittal. "SybilBelief: A Semi-supervised Learning Approach for Structure-based Sybil Detection". 
  In IEEE Transactions on Information Forensics and Security (TIFS), 9(6), 2014.
  
- For any question, please contact Neil Zhenqiang Gong (neilgong@iastate.edu), Le Zhang (lezhang@iastate.edu), or Binghui Wang (binghuiw@iastate.com).
+ For any question, please contact Neil Zhenqiang Gong (neilz.gong@gmail.com), Le Zhang (lezhang@iastate.edu), or Binghui Wang (binghuiw@iastate.edu)
  */
 
 #include <stdio.h>
@@ -23,6 +24,7 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
+#include <pthread.h>
 
 #define GCC_VERSION (__GNUC__ * 10000 \
 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
@@ -37,34 +39,28 @@ using namespace std::tr1;
 #endif
 using namespace std;
 
-
 // random generator function:
 ptrdiff_t myrandom (ptrdiff_t i) { return rand()%i;}
 
 // pointer object to it:
 ptrdiff_t (*p_myrandom)(ptrdiff_t) = myrandom;
 
-long randint(long min, long max){
-    
-    return long(rand() / (RAND_MAX + 0.0) * (max - min) + min);
-    
-}
 
 class Data{
 public:
-	typedef unsigned long int vertex;
-	
+    typedef unsigned long int vertex;
+    
     //total number of nodes
     long N;  
     
-	//adjacency list
+    //adjacency list
     //weighted graph
-	unordered_map<vertex,list<pair<vertex, double> > > network_map;
+    unordered_map<vertex,list<pair<vertex, double> > > network_map;
     
     //1 : weighted, 0: unweighted
     int weighted_graph;
     
-	//messages, each message sum to 1
+    //messages, each message sum to 1
     unordered_map<string, double> messages_map;
     unordered_map<string, double> messages_map_new;
     
@@ -77,8 +73,8 @@ public:
     double *post;
     
     //network file
-	char *network_file;
-	
+    char *network_file;
+    
     //posterior file
     char *post_file;
 
@@ -86,10 +82,10 @@ public:
     char *prior_file;
     
     //labeled training set file
-	char *train_set_file;
+    char *train_set_file;
     
-	//parameters of PMR model when input is a set of labeled nodes, instead of priors
-	double theta_pos; // positive nodes
+    //parameters of PMR model when input is a set of labeled nodes, instead of priors
+    double theta_pos; // positive nodes
     double theta_neg; // negative nodes
     double theta_unl; // unlabeled nodes
     
@@ -98,28 +94,39 @@ public:
     
     //number of maximum iterations
     double max_iter;
-	
+    
+	//number of threads
+	int num_threads;
 
+    int* ordering_array;
+    
+    class lbp_arg{
+    public:
+        Data * data_pointer;
+        int current_thread;
+        lbp_arg(){}
+    };
+    
     Data(){
-        
-	}
+          
+    }
     
     
     /* Store edges and weights in the network_map */
-	void add_edge(vertex node1, vertex node2, double w){
-		
-		// no self loops
-		if(node1==node2){
-			return;
-		}
-		
-		//add node2 to the adjacency list of node1
+    void add_edge(vertex node1, vertex node2, double w){
+        
+        // no self loops
+        if(node1==node2){
+            return;
+        }
+        
+        //add node2 to the adjacency list of node1
         pair <vertex, double> nei (node2, w);
-		network_map[node1].push_back(nei);
-	}
-	
+        network_map[node1].push_back(nei);
+    }
+    
 
-	/* Read the social graph */
+    /* Read the social graph */
     //the format for the social graph is
     //each line corresponds to an edge, e.g, 3 2 0.8
     //each edge in the graph appears twice, e.g.,
@@ -224,7 +231,7 @@ public:
         }
         
     }
-	
+    
 
     string construct_id (vertex sender, vertex receiver){
         
@@ -243,8 +250,8 @@ public:
     
 
     /* Initialize all edges the messages */
-	void initialize_messages(){
-		
+    void initialize_messages(){
+        
         vertex node, nei;
         list<pair<vertex, double> >::iterator iter;
         string id;
@@ -259,12 +266,12 @@ public:
 
         }
         
-	}
-	
-	
-	/* Send message from sender to receiver */
-	double send_message(vertex sender, vertex receiver, double w){
-		
+    }
+    
+    
+    /* Send message from sender to receiver */
+    double send_message(vertex sender, vertex receiver, double w){
+        
         //calculate multiplication of messages sent to sender except the one from the receiver.
         double other_message[] = {1 - post[sender], post[sender]};
         double message_receiver_sender_pos;
@@ -276,7 +283,7 @@ public:
         other_message[1] /= message_receiver_sender_pos;
         
         
-		double message[] = {0.0, 0.0};
+        double message[] = {0.0, 0.0};
         
         int i, j;
         double node_potential;
@@ -307,10 +314,10 @@ public:
             message[1] = 1 - 1e-10;
         }
         
-		return message[1];
+        return message[1];
         
-	}
-	
+    }
+    
 
     /* Update posteriors in each iteration */
     void update_post(){
@@ -365,64 +372,110 @@ public:
     }
 
 
-    /* Loopy belief propagation */
-    //use iterative method to propagate messages
-    //flooding method's performance is not as good as iterative method    
-	void lbp(){
-		
-		//initialize messages
-		initialize_messages();
-    
-		vector<vertex> ordering;
-		for (vertex i = 0; i < N; i++) {
-			ordering.push_back(i);
-		}
-		
-		
-		vector<vertex>::iterator iter_order;
-		vertex node;
+    static void * lbp_thread(void *arg_pointer){
+        
+        Data * pointer = ((lbp_arg *)arg_pointer)->data_pointer;
+        int current_thread = ((lbp_arg *)arg_pointer)->current_thread;
+        
+        int num_nodes = ceil(((float)pointer->N) / pointer->num_threads);
+        int start = current_thread * num_nodes;
+        int end = current_thread * num_nodes + num_nodes;
+        
+        
+        if (end > pointer->N) {
+            end = pointer->N;
+        }
+        
+        vertex node;
         double message;
         list<pair<vertex, double> >::iterator nei_iter;
         string id;
-        
         double sum;
         
-        int iter = 1;
-		while (iter <= max_iter) {
+        for (vertex index = start; index < end; index++) {
+            node = pointer->ordering_array[index];
+            
+            //collect messages for node from all of its neighbors
+            for (nei_iter = pointer->network_map[node].begin(); nei_iter != pointer->network_map[node].end(); nei_iter++) {
+                
+				message = pointer->send_message((*nei_iter).first, node, (*nei_iter).second);
 
+				//update message_map
+				id = pointer->construct_id((*nei_iter).first, node);
+
+				//Here we reassign the message when it is updated. 
+                pointer->messages_map[id] = message;
+				           
+            }
+            
+        }
+        
+		//update post
+		pointer->update_post();
+        
+    }
+        
+    
+    /* Loopy belief propagation */
+    //use iterative method to propagate messages
+    //flooding method's performance is not as good as iterative method
+    void lbp(){
+      
+        ordering_array = (int*) malloc(sizeof(int) * N);
+        
+		//initialize messages
+		initialize_messages();
+
+        vector<vertex> ordering;
+        for (vertex i = 0; i < N; i++) {
+            ordering.push_back(i);
+        }
+        
+        
+        vector<vertex>::iterator iter_order;
+        
+        lbp_arg * arg_pointer;
+        int current_thread;
+        pthread_t thread;
+        vector<pthread_t> threads;
+        
+        vertex i = 0;
+
+        int iter = 1;
+        while (iter <= max_iter) {
+            
+            threads.clear();
+            
             //random ordering
             random_shuffle(ordering.begin(), ordering.end(), p_myrandom);
-           
-			for (iter_order = ordering.begin(); iter_order != ordering.end(); iter_order++) {
-				node = *iter_order;
-                
-				//collect messages for node from all of its neighbors
-				for (nei_iter = network_map[node].begin(); nei_iter != network_map[node].end(); nei_iter++) {
-                        
-                    message = send_message((*nei_iter).first, node, (*nei_iter).second);
-                   
-                    //update message_map
-                    id = construct_id((*nei_iter).first, node);
-                    messages_map_new[id] = message;
-                }
-                
+
+            for (iter_order = ordering.begin(), i = 0; iter_order != ordering.end(); iter_order++, i++){
+                ordering_array[i] = *iter_order;
             }
-
-            messages_map.clear();
-            messages_map = messages_map_new;
             
-            //update post
-            update_post();
-			
-			iter += 1;
-			
-		}
-		
-        //calculate the final posteriors
-        posterior();
-	}
-    
+            for (current_thread = 0; current_thread < num_threads; current_thread++) {
+                arg_pointer = new lbp_arg();
+                arg_pointer->data_pointer = this;
+                arg_pointer->current_thread = current_thread;
+                
+                pthread_create(&thread, NULL, lbp_thread, (void*)arg_pointer);
+                threads.push_back(thread);
 
+            }
+            
+            for (i = 0; i < threads.size(); i++) {
+                pthread_join(threads[i], NULL);
+            }
+            
+            iter += 1;
+
+        }
+
+        posterior();
+
+    }
+    
+    
     /* Write final posteriors to the output file */
     void write_posterior(){
         
@@ -436,15 +489,13 @@ public:
         
     }
 
-
     void parse_par(int argc, char **argv){
         
         //default setting
         network_file = "";
-    
-        train_set_file = "";
-        post_file = "";
-        prior_file = "";
+		train_set_file = "";
+		post_file = "";
+		prior_file = "";
 
         max_iter = 5;
         
@@ -456,6 +507,8 @@ public:
         
         //by default, unweighted graph
         weighted_graph = 0;
+                    
+        num_threads = 2;
         
         int i = 1;
         
@@ -491,6 +544,9 @@ public:
             else if (strcmp(argv[i],"-wg") == 0){
                 weighted_graph = atoi(argv[i + 1]);
             }
+            else if (strcmp(argv[i],"-nt") == 0){
+                num_threads = atoi(argv[i + 1]);
+            }
             else{
                 cout << "undefined inputs: " << argv[i] <<endl;
                 exit(0);
@@ -501,11 +557,12 @@ public:
         
     }
     
+    
 };
 
 
 int main (int argc, char **argv)
-{	
+{
     
     srand ( time(NULL) );
     
@@ -517,9 +574,9 @@ int main (int argc, char **argv)
     
     data.read_prior();
     
-    data.lbp();
-        
-    data.write_posterior();
-
+	data.lbp();
+	
+	data.write_posterior();
+	       
     return 0;
 }
