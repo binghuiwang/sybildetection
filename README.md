@@ -9,6 +9,9 @@ Neil Zhenqiang Gong, Mario Frank, and Prateek Mittal. "SybilBelief: A Semi-super
 
 Binghui Wang, Le Zhang, and Neil Zhenqiang Gong. "SybilSCAR: Sybil Detection in Online Social Networks via Local Rule based Propagation". In IEEE International Conference on Computer Communications (INFOCOM), 2017. 
 
+Binghui Wang, Jinyuan, Jia, Le Zhang, and Neil Zhenqiang Gong. "Structure-based Sybil Detection in Social
+Networks via Local Rule-based Propagation". IEEE TRANSACTIONS ON NETWORK SCIENCE AND ENGINEERING (TNSE), 2019. 
+
 Binghui Wang, Neil Zhenqiang Gong, and Hao Fu, “GANG: Detecting Fraudulent Users in Online Social Networks via Guilt-by-Association on Directed Graphs”, IEEE International Conference on Data Mining (ICDM), 2017.
 
 
