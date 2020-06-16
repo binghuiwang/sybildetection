@@ -1,7 +1,7 @@
 # Sybildetection
 Structure-based Sybil/fake account detection in online social networks 
 
-The codes are provided for research purposes only and without any warranty. Any commercial use is prohibited.
+#The codes are provided for research purposes only and without any warranty. Any commercial use is prohibited.
 The codes implement the SybilBelief, SybilRank, SybilSCAR, and GANG algorithms.
 
 When using it in your research work, you should cite the following papers:
