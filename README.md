@@ -1,7 +1,6 @@
 # Sybildetection
 Structure-based Sybil/fake account detection in online social networks 
 
-#The codes are provided for research purposes only and without any warranty. Any commercial use is prohibited.
 The codes implement the SybilBelief, SybilRank, SybilSCAR, and GANG algorithms.
 
 When using it in your research work, you should cite the following papers:
@@ -13,4 +12,4 @@ Binghui Wang, Le Zhang, and Neil Zhenqiang Gong. "SybilSCAR: Sybil Detection in 
 Binghui Wang, Neil Zhenqiang Gong, and Hao Fu, “GANG: Detecting Fraudulent Users in Online Social Networks via Guilt-by-Association on Directed Graphs”, IEEE International Conference on Data Mining (ICDM), 2017.
 
 
-For any question, please contact Binghui Wang (binghuiw@iastate.edu).
+For any question, please contact Binghui Wang (binghui.wang@duke.edu).
