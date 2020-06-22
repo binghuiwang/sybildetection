@@ -262,7 +262,7 @@ public:
             
         }
         tp += int(eq_pos/2);
-        tn += eq_pos - int(eq_pos/2);
+        fn += eq_pos - int(eq_pos/2);
 
         for (iter = neg_test_set.begin(); iter != neg_test_set.end(); iter++) {
             if (post[*iter] > thresh) {
